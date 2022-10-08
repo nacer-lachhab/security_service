@@ -20,6 +20,7 @@ import laur.spilca.tuto.entities.Otp;
 import laur.spilca.tuto.repositories.OtpRepository;
 import laur.spilca.tuto.security.authentications.OtpAuthentication;
 import laur.spilca.tuto.security.authentications.UsernamePasswordAuthentication;
+import laur.spilca.tuto.security.manager.TokenManager;
 
 @Component
 public class UsernamePasswordAuthFilter extends OncePerRequestFilter{
@@ -29,6 +30,9 @@ public class UsernamePasswordAuthFilter extends OncePerRequestFilter{
 	
 	@Autowired
 	private OtpRepository otpRepository;
+	
+	@Autowired
+	private TokenManager tokenManager;
 	
 	@Override
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
@@ -62,7 +66,9 @@ public class UsernamePasswordAuthFilter extends OncePerRequestFilter{
 			a = authenticationManager.authenticate(a);
 			
 			////we issue a token
-			response.setHeader("Authorization",UUID.randomUUID().toString());
+			String token = UUID.randomUUID().toString();
+			tokenManager.add(token);
+			response.setHeader("Authorization",token );
 		}
 	}
 

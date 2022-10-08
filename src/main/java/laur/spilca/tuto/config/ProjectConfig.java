@@ -1,13 +1,16 @@
 package laur.spilca.tuto.config;
 
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
@@ -20,6 +23,7 @@ import laur.spilca.tuto.security.providers.TokenAuthenticationProvider;
 import laur.spilca.tuto.security.providers.UsernamePasswordAuthProvider;
 
 @Configuration
+@EnableAsync
 public class ProjectConfig extends WebSecurityConfigurerAdapter{
 	
 	private UsernamePasswordAuthProvider usernamePasswordAuthProvider;
@@ -77,5 +81,13 @@ public class ProjectConfig extends WebSecurityConfigurerAdapter{
 				BasicAuthenticationFilter.class);
 		}
 
-	
+	@Bean
+	public InitializingBean initializingBean() {
+		//InitializingBean: called while initializing context to excute a set of instructions.
+		//					Here change the SecurityContextHolder_Strategy.
+		return ()->{
+			SecurityContextHolder
+			.setStrategyName(SecurityContextHolder.MODE_INHERITABLETHREADLOCAL);
+		};
+	}
 }
